@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Mar 22 11:46:20 2021
 
-@author: aytha
-"""
 #%%
 import keras
 import os
@@ -145,13 +141,35 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     mode='max',
     save_best_only=True)
 
-demographic_classification.fit(training_data,validation_data=testing_data,
+train = False
+if train:
+    demographic_classification.fit(training_data,validation_data=testing_data,
                                epochs=3,
                                callbacks=[model_checkpoint_callback])
+else:
+    demographic_classification.load_weights(checkpoint_filepath)
 
-def load_demographic_model(model,checkpoint_filepath):
-    model.load_weights(checkpoint_filepath)
-    return model
+
+## TSNE trained model
+from sklearn.manifold import TSNE
+
+#get all labels:
+indxs = np.random.rand(len(demo_data)) < 0.05 
+
+whole_dataset = ImageDataGenerator(preprocessing_function=preprocess).flow_from_dataframe(demo_data,directory=".",target_size=(224,224),y_col=['HA','HB','HN','MA','MB','MN'],class_mode='raw')
+labels = demographic_classification.predict(whole_dataset)
+
+print("labels")
+tsne = TSNE(2,random_state=0)
+tsne_data = tsne.fit_transform(embeddings)
+
+fig = plt.figure(figsize = (10, 10))
+ax = fig.add_subplot(111)
+scatter = ax.scatter(tsne_data[:,0],tsne_data[:,1], labels, c = labels, cmap = 'tab10')
+handles, labels = scatter.legend_elements()
+legend = ax.legend(handles = handles, labels = labels)
+plt.title('Demographic')
+plt.show()
 
 # %%
 
