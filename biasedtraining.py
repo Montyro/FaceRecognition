@@ -27,9 +27,7 @@ config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
 #load whole dataset
-data = DiveFaceDataLoader().LoadData("4K_120")
-#Drop Id (not required)
-demo_data = data.drop('Id',axis=1)
+demo_data = DiveFaceDataLoader().LoadData("4K_120")
 #Set UP so its usable with keras ImageDataGenerator
 demo_data.rename(columns={'Image':'filename'},inplace=True)
 
@@ -46,9 +44,10 @@ model_vgg=Model(resnet.input, feature_layer)
 model_vgg.trainable = False
 
 #Create the 3 subsets from the dataset (one per race)
-#white people
+#white people (about 55k images keep one per identity)
 white_entries = demo_data.drop(['HN','HA','MN','MA'],axis=1)
 white_entries = white_entries[demo_data['HB'] != demo_data['MB']]
+white_entries = white_entries.drop_duplicates("Id")
 #asian people
 asian_entries = demo_data.drop(['HN','HB','MN','MB'],axis=1)
 asian_entries = asian_entries[demo_data['HA'] != demo_data['MA']]
@@ -73,8 +72,10 @@ def preprocess(img):
 training_split  = 0.8
 indxs = np.random.rand(len(white_entries)) < training_split 
 training = white_entries[indxs]
+print("Training entries",len(training))
 training_data = ImageDataGenerator(preprocessing_function=preprocess).flow_from_dataframe(training,directory=".",target_size=(224,224),y_col=['HB','MB'],class_mode='raw')
 testing = white_entries[~indxs]
+print("Testing entries",len(testing))
 testing_data = ImageDataGenerator(preprocessing_function=preprocess).flow_from_dataframe(testing,directory=".",target_size=(224,224),y_col=['HB','MB'],class_mode='raw')
 
 

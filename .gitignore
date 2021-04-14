@@ -133,5 +133,6 @@ dmypy.json
 *.pt 
 *.h5
 *.jpg
+checkpoints/
 checkpoint
 checkpoints.*
