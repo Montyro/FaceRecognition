@@ -58,6 +58,23 @@ asian_entries = asian_entries[demo_data['HA'] != demo_data['MA']]
 #afroamerican people
 afr_entries = demo_data.drop(['HA','HB','MB','MA'],axis=1)
 afr_entries = afr_entries[demo_data['HN'] != demo_data['MN']]
+#%% Generate joint dataset
+wh_mf = white_entries.rename(columns={'HB':'H','MB':'B'})
+balanced_dataset_training = wh_mf[wh_mf['H'] == 1].head(250)
+balanced_dataset_training = balanced_dataset_training.append(wh_mf[wh_mf['B'] == 1].head(250))
+balanced_dataset_eval = wh_mf[wh_mf['H'] == 1].tail(250)
+balanced_dataset_eval= balanced_dataset_eval.append(wh_mf[wh_mf['B'] == 1].tail(250)) 
+as_mf = asian_entries.rename(columns={'HA':'H','MA':'B'})
+balanced_dataset_training = balanced_dataset_training.append(as_mf[as_mf['H'] == 1].head(250))
+balanced_dataset_training = balanced_dataset_training.append(as_mf[as_mf['B'] == 1].head(250))
+balanced_dataset_eval = balanced_dataset_eval.append(as_mf[as_mf['H'] == 1].tail(250)) 
+balanced_dataset_eval= balanced_dataset_eval.append(as_mf[as_mf['B'] == 1].tail(250)) 
+af_mf = afr_entries.rename(columns={'HN':'H','MN':'B'})
+balanced_dataset_training = balanced_dataset_training.append(af_mf[af_mf['H'] == 1].head(250))
+balanced_dataset_training = balanced_dataset_training.append(af_mf[af_mf['B'] == 1].head(250))
+balanced_dataset_eval = balanced_dataset_eval.append(af_mf[af_mf['H'] == 1].tail(250)) 
+balanced_dataset_eval= balanced_dataset_eval.append(af_mf[af_mf['B'] == 1].tail(250)) 
+
 
 #%% Create the training and testing ImageDataGenerators
 
