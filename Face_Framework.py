@@ -55,7 +55,7 @@ from dataloader import DiveFaceDataLoader
 
 data = DiveFaceDataLoader().LoadData("4K_120")
 #%%
-'''
+
 from PIL import Image
 #Get 50 from each demographic group, max 1 example per ID.
 #set id as index
@@ -64,12 +64,14 @@ data_id_as_index = data.set_index("Id",drop=True)
 print(one_id.columns.array[1:])
 embeddings = []
 
-num_persons = 50
+print(one_id)
+num_persons = 1200
 for column in one_id.columns.array[1:]:
-    print(column)
+    #print(column)
     top50 =  one_id.loc[one_id[column]==1].head(num_persons)
     for index,row in top50.iterrows():
-        img = Image.open(index)
+        #print(row)
+        img = Image.open(row[0])
         img = img.resize((224,224))
         img = np.expand_dims(img, axis=0)
         embed = model_vgg.predict(img)
@@ -84,15 +86,16 @@ from sklearn.manifold import TSNE
 labels =  [i//num_persons for i in np.arange(6*num_persons)]
 tsne = TSNE(2,random_state=0)
 tsne_data = tsne.fit_transform(embeddings)
-
+print(len(labels))
+print(tsne_data.shape)
 fig = plt.figure(figsize = (10, 10))
 ax = fig.add_subplot(111)
-scatter = ax.scatter(tsne_data[:,0],tsne_data[:,1], labels, c = labels, cmap = 'tab10')
+scatter = ax.scatter(tsne_data[:-1,0],tsne_data[:-1,1], labels, c = labels, cmap = 'tab10')
 handles, labels = scatter.legend_elements()
 legend = ax.legend(handles = handles, labels = labels)
 plt.title('Demographic')
 plt.show()
-'''
+
 
 
 #%%

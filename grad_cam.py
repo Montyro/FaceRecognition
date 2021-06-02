@@ -23,6 +23,11 @@ from PIL import Image
 import tensorflow as tf
 from tensorflow.compat.v1 import InteractiveSession
 
+#%%  To solve some GPU DRAM limitations
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
 #%% Define gradcam
 def get_img_array(img_path, size):
     # `img` is a PIL image of size 299x299
@@ -95,17 +100,18 @@ model_class = keras.Sequential([
     keras.layers.Dense(2,activation="softmax")]
 )
 # Make model
-model_class.load_weights('White.h5')
+classifier_name = 'Balanced.h5'
+model_class.load_weights(classifier_name)
 
 vgg =  model_class.layers[0]
-vgg.summary()
+#vgg.summary()
 ld = model_class.layers[-2](model_vgg.output)
 classifier = model_class.layers[-1](ld)
 
 model = Model(inputs=model_vgg.input,outputs=classifier)
 
 
-model.summary()
+#model.summary()
 # Remove last layer's softmax
 model.layers[-1].activation = None
 
@@ -152,7 +158,9 @@ def save_and_display_gradcam(img_path, heatmap, cam_path="cam.jpg", alpha=0.4):
     plt.imshow(superimposed_img)
     plt.plot()
 
+
 #%%
+print("Clasificador:",classifier_name )
 #hombre asiatico
 img_path = '4K_120/HA4K_120/10056630@N08_identity_2/9676804769_0.jpg'
 img_array = get_img_array(img_path, size=(224,224))
@@ -163,11 +171,11 @@ if preds[0][0] > preds [0][1]:
 else:
     print("Prediccion: Mujer")
 # Generate class activation heatmap
-heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_3x3')
+heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase')
 save_and_display_gradcam(img_path, heatmap)
 #%%
 
-#mujer asiatico
+#mujer asiatica
 img_path = '4K_120/MA4K_120/111882767@N08_identity_6/11437326484_1.jpg'
 img_array = get_img_array(img_path, size=(224,224))
 # Print what the top predicted class is
@@ -177,6 +185,63 @@ if preds[0][0] > preds [0][1]:
 else:
     print("Prediccion: Mujer")
 # Generate class activation heatmap
-heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase/bn')
+heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase')
+save_and_display_gradcam(img_path, heatmap)
+
+#%%
+#hombre blanco
+img_path = '4K_120/HB4K_120/10012300@N04_identity_2/8081040330_0.jpg'
+img_array = get_img_array(img_path, size=(224,224))
+# Print what the top predicted class is
+preds = model.predict(img_array)
+if preds[0][0] > preds [0][1]:
+    print("Prediccion: Hombre")
+else:
+    print("Prediccion: Mujer")
+# Generate class activation heatmap
+heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase')
+save_and_display_gradcam(img_path, heatmap)
+#%%
+
+#mujer blanca
+img_path = '4K_120/MB4K_120/101003966@N02_identity_49/10383421963_1.jpg'
+img_array = get_img_array(img_path, size=(224,224))
+# Print what the top predicted class is
+preds = model.predict(img_array)
+if preds[0][0] > preds [0][1]:
+    print("Prediccion: Hombre")
+else:
+    print("Prediccion: Mujer")
+# Generate class activation heatmap
+heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase')
+save_and_display_gradcam(img_path, heatmap)
+
+
+#%%
+#hombre negro
+img_path = '4K_120/HN4K_120/10022684@N08_identity_0/1258764222_0.jpg'
+img_array = get_img_array(img_path, size=(224,224))
+# Print what the top predicted class is
+preds = model.predict(img_array)
+if preds[0][0] > preds [0][1]:
+    print("Prediccion: Hombre")
+else:
+    print("Prediccion: Mujer")
+# Generate class activation heatmap
+heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase')
+save_and_display_gradcam(img_path, heatmap)
+#%%
+
+#mujer negra
+img_path = '4K_120/MN4K_120/115558844@N05_identity_10/12179471673_6.jpg'
+img_array = get_img_array(img_path, size=(224,224))
+# Print what the top predicted class is
+preds = model.predict(img_array)
+if preds[0][0] > preds [0][1]:
+    print("Prediccion: Hombre")
+else:
+    print("Prediccion: Mujer")
+# Generate class activation heatmap
+heatmap = make_gradcam_heatmap(img_array,model, 'conv5_3_1x1_increase')
 save_and_display_gradcam(img_path, heatmap)
 # %%
