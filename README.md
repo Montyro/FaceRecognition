@@ -1,7 +1,14 @@
-# Face Recognition labs.
+# Biases in Face Recognition Algorithms.
 
-Some labs over Face Recognition embeddings in order to study dataset biases effects on neural networks.
+An study on how models that are trained for specific tasks, such as face recognition, can implicitly learn biases such as gender or race from the training data, and how to prevent it.
 
-Using the [diveface dataset](https://github.com/BiDAlab/DiveFace).
+![example image](example.png)
 
-The work is done using the vggface model entirely instead of training over the embeddings because I will be using Grad-CAM to visualice activation regions for each classifier.
+<sup><sub>TSNE over face recognition embeddings. Labels are demographic
+groups </sup></sub>
+
+This study was performed using the [diveface dataset](https://github.com/BiDAlab/DiveFace), with a trained-from-scratch vggface model, instead of training over the embeddings in order to do Grad-CAM to visualize activation regions for each classifier.
+
+This is a project for one of my master thesis subjects.
+
+
